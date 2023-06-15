@@ -9,17 +9,18 @@
 #ifndef LCDCONFIG_H_
 #define LCDCONFIG_H_
 
+#include "LCDinterface.h"
 /************************************************************************/
 /* control mode of operation                                            */
 /************************************************************************/
 #define LCDCONFIGURATION 4
 
+#define SET_CURSOR_LOCATION 0x80
 
 /************************************************************************/
 /* 4BIT Mode                                                            */
 /************************************************************************/
-#if(LCDCONFIGURATION == 4)
-#include "LCDinterface_4bit.h"
+
 
 
 /************************************************************************/
@@ -50,20 +51,13 @@
 /************************************************************************/
 /* 8BIT Mode                                                            */
 /************************************************************************/
-#elif(LCDCONFIGURATION == 8)
-#include "LCDinterface_8bit.h"
+
 
 
 /************************************************************************/
 /* Data Bits and ControlBits                                            */
 /************************************************************************/
-#define LCD_DATA_REG PORTD
-#define LCD_DATA_PORT PORT_D
-#define LCD_PORT_CONTROL PORT_A
 
-#define LCD_RS PIN3
-s
-#define LCD_E PIN2
 
 
 /************************************************************************/
@@ -74,7 +68,7 @@ s
 #define DSPLY_CLR_CMND 0x01 
 #define NTRY_MD_ST 0x06 /*set mode to increment*/
 
-#endif
+
 
 
 
