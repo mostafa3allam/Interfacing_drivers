@@ -5,7 +5,7 @@
  *  Author: mosta
  */ 
 
-#define F_CPU 1000000UL
+#define F_CPU 16000000UL
 
 #include "LCDconfig.h"
 #include <util/delay.h>
