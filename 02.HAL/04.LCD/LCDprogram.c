@@ -5,7 +5,7 @@
  *  Author: mosta
  */ 
 
-#define F_CPU 16000000UL
+#define F_CPU 1000000UL
 
 #include "LCDconfig.h"
 #include <util/delay.h>
@@ -68,18 +68,19 @@ void LCD_voidInit4bit()
 	DIO_voidSetPinDirection(LCD_PORT_CONTROL, LCD_E, OUT);
 	_delay_ms(35);
 	
-	LCD_voidSendCommand4Bit(INIT_CMND1);
-	LCD_voidSendCommand4Bit(INIT_CMND2);
-	_delay_us(45);
+	LCD_voidSendCommand4Bit(/*INIT_CMND1*/0x33);	//0x22
+	LCD_voidSendCommand4Bit(/*INIT_CMND2*/0x32);	//0x40
+	_delay_ms(1);
 	
-	LCD_voidSendCommand4Bit(DSPLY_OF_CMND1);
-	_delay_us(45);
+	LCD_voidSendCommand4Bit(/*DSPLY_OF_CMND1*/0x28);	//0xc0
+	_delay_ms(1);
 	
-	LCD_voidSendCommand4Bit(DSPLY_CLR_CMND1);
+	LCD_voidSendCommand4Bit(/*DSPLY_CLR_CMND1*/0x0c);	//0x01
 	_delay_ms(2);
 	
-	LCD_voidSendCommand4Bit(NTRY_MD_ST1);
-
+	LCD_voidSendCommand4Bit(/*NTRY_MD_ST1*/0x01);
+	LCD_voidSendCommand4Bit(/*NTRY_MD_ST1*/0x06);		//0x60
+_delay_ms(100);
 }
 
 
@@ -139,29 +140,25 @@ void LCD_voidSendData4Bit(u8 lcd4data)
 }
 
 
-void LCD_voidSendString(u8 lcdstring[])
+void LCD_voidSendString(u8 lcdstring[30])
 {
 	for (u8 i=0; lcdstring[i] != '\0'; i++)
 	{
-		if (LCDCONFIGURATION == 4)
-		{
+		#if (LCDCONFIGURATION == 4)
 			LCD_voidSendData4Bit(lcdstring[i]);
-		}
-		else if (LCDCONFIGURATION == 8){
+		#elif (LCDCONFIGURATION == 8)
 			LCD_voidSendData8Bit(lcdstring[i]);
-		}
+		#endif
 	}
 }
 
 void LCD_voidClrScrn()
 {
-	if (LCDCONFIGURATION == 4)
-	{
+	#if (LCDCONFIGURATION == 4)
 		LCD_voidSendCommand4Bit(0x01);
-	}
-	else if (LCDCONFIGURATION == 8){
+	#elif (LCDCONFIGURATION == 8){
 		LCD_voidSendCommand8Bit(0x01);
-	}
+	#endif
 }
 
 void LCD_voidGoToRowColumn(u8 row,u8 col)
@@ -183,18 +180,16 @@ void LCD_voidGoToRowColumn(u8 row,u8 col)
 				Address=col+0x50;
 				break;
 	}					
-	if (LCDCONFIGURATION == 4)
-	{
+	#if (LCDCONFIGURATION == 4)
 		LCD_voidSendCommand4Bit(Address | SET_CURSOR_LOCATION);
-	}
-	else if (LCDCONFIGURATION == 8){
+	#elif (LCDCONFIGURATION == 8)
 		LCD_voidSendCommand8Bit(Address | SET_CURSOR_LOCATION);
-	}
+	#endif
 }
 
-void LCD_voidIntgertoStr(u8 data)
+void LCD_voidIntgertoStr(u16 data)
 {
-	u8 post_data[5];
+	u8 post_data[10];
 	u8 counter=0;
 	do 
 	{
@@ -202,18 +197,38 @@ void LCD_voidIntgertoStr(u8 data)
 		data = data / 10;
 		counter++;
 	} while (data != 0);
-	if (LCDCONFIGURATION == 4)
-	{
-		for (; counter >= 0; counter --)
+	#if (LCDCONFIGURATION == 4)
+		for (; counter > 0; counter --)
 		{
-			LCD_voidSendData4Bit(post_data[counter]);
+			LCD_voidSendData4Bit(post_data[counter-1]);
 		}
-	}
-	else if (LCDCONFIGURATION == 8){
-		for (; counter >= 0; counter --)
+	#elif (LCDCONFIGURATION == 8)
+		for (; counter > 0; counter --)
 		{
-			LCD_voidSendData8Bit(post_data[counter]);
+			LCD_voidSendData8Bit(post_data[counter-1]);
 		}
-	}
+	#endif
 }
 
+void LCD_voidCustomCharacter(u8 customArr[1][8])
+{
+	#if (LCDCONFIGURATION == 4)
+		LCD_voidSendCommand4Bit(0x40);
+		for (u8 i=0; i < 8; i++)
+		{
+			/*for (u8 j=0; j < 8;j++)
+			{*/
+				LCD_voidSendData4Bit(customArr[0][i]);
+			//}
+		}
+		LCD_voidSendCommand4Bit(0x80);
+		for (u8 i=0; i < 8; i++)
+		{
+			/*for (u8 j=0; j < 8;j++)
+			{*/
+				LCD_voidSendData4Bit(customArr[0][i]);
+			//}
+		}
+	
+	#endif
+}

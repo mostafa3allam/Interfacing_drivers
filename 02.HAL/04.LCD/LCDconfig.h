@@ -33,11 +33,11 @@
 #define LCD_DATA_PIN1 PIN0
 #define LCD_DATA_PIN2 PIN1
 #define LCD_DATA_PIN3 PIN2
-#define LCD_DATA_PIN4 PIN4
+#define LCD_DATA_PIN4 PIN3
 
-#define LCD_RS PIN3
-#define LCD_RW PIN1
-#define LCD_E PIN2
+#define LCD_RS PIN5
+#define LCD_RW PIN4
+#define LCD_E PIN6
 
 /************************************************************************/
 /* Commands                                                             */
